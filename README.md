@@ -1,47 +1,68 @@
 # EcoAgents
 
-**EcoAgents** is a Java Swing artificial-life simulation that models an ecosystem containing herbivores, carnivores, and plants.
+**EcoAgents** is a Java-based artificial-life and multi-agent ecosystem simulation featuring autonomous herbivores, carnivores, and plants.
 
-The project demonstrates how autonomous agents can perceive a local environment, process sensory information through a simple neural decision system, choose actions, consume energy, learn from experience, reproduce, and pass an inherited neural network to the next generation.
+Each animal perceives only its local environment, processes sensory information using a neural decision system, chooses an action, receives reinforcement feedback, learns during its lifetime, consumes energy, and may reproduce by passing an inherited and mutated neural network to the next generation.
+
+The project also includes an interactive Java Swing interface for observing the ecosystem, inspecting individual agents, monitoring population changes, and visualizing evolutionary events.
 
 ---
 
-## Features
+## Application Preview
+
+### Interactive Agent Inspection
+
+![EcoAgents main interface](docs/screenshots/main-interface.png)
+
+The main interface displays the artificial ecosystem on a toroidal grid.
+
+Living animals can be selected directly from the environment to inspect their internal state, including their position, direction, energy, generation, sensor values, neural outputs, selected action, and learning reward.
+
+### Population and Evolution Monitoring
+
+![EcoAgents simulation analysis](docs/screenshots/simulation-analysis.png)
+
+The simulation dashboard provides live population monitoring, total births, maximum generation, population history, and an event log.
+
+---
+
+## Main Features
 
 - Toroidal grid environment
-- Herbivore and carnivore autonomous agents
-- Static plant resources
-- Local sensor-based perception
-- 12 neural-network inputs
-- 4 neural-network outputs
-- Winner-takes-all action selection
-- Energy and metabolism system
+- Autonomous Herbivore agents
+- Autonomous Carnivore agents
+- Plant resources
+- Local perception system
+- 12 sensor inputs
+- 4 neural outputs
+- Winner-takes-all neural decision making
+- Energy and metabolism
 - Herbivore feeding
 - Carnivore hunting
 - Reinforcement-based neural adaptation
 - Exploration during decision making
-- Reproduction at 90% energy
+- Reproduction
 - Neural-network inheritance
-- Mutation in offspring
+- Mutation
 - Generation tracking
+- Population history visualization
+- Event logging
+- Interactive agent inspection
 - Java Swing graphical interface
 - Start, Pause, Step, Reset, and Speed controls
-- Interactive agent inspector
-- Population history chart
-- Simulation event log
 
 ---
 
-## Artificial Life Model
+## Artificial Life Cycle
 
-Each animal follows the general cycle:
+Each autonomous animal follows the general cycle:
 
 ```text
 Environment
     ↓
 Sensors
     ↓
-Neural Network
+Neural Brain
     ↓
 Action Selection
     ↓
@@ -51,29 +72,102 @@ Reward
     ↓
 Learning
     ↓
-Energy
+Energy Update
     ↓
 Reproduction
 ```
 
-The simulation contains two autonomous animal species:
+This architecture combines:
 
-- Herbivores
-- Carnivores
-
-Plants are static environmental resources.
+```text
+Local perception
++
+Neural decision making
++
+Lifetime learning
++
+Energy-based survival
++
+Evolution between generations
+```
 
 ---
 
-## Environment
+## Ecosystem
 
-The ecosystem is represented as a two-dimensional grid.
+The ecosystem contains three main entity types:
 
-The environment uses **toroidal topology**.
+```text
+Herbivore
+Carnivore
+Plant
+```
 
-This means that when an agent crosses one boundary of the world, it appears on the opposite side.
+### Herbivore
 
-For example:
+Herbivores search for and consume plants.
+
+A Herbivore can:
+
+- turn left
+- turn right
+- move forward
+- eat nearby plants
+- gain energy
+- learn from feedback
+- reproduce
+- transfer its neural parameters to offspring
+
+Successful plant consumption provides:
+
+```text
++1 energy
+```
+
+### Carnivore
+
+Carnivores search for and hunt Herbivores.
+
+A Carnivore can:
+
+- turn left
+- turn right
+- move forward
+- hunt nearby Herbivores
+- gain energy
+- learn from feedback
+- reproduce
+- transfer its neural parameters to offspring
+
+Successful hunting provides:
+
+```text
++2 energy
+```
+
+### Plant
+
+Plants are static environmental resources.
+
+Plants:
+
+- occupy grid cells
+- do not move
+- do not contain a neural network
+- do not make decisions
+- can be consumed by Herbivores
+
+---
+
+## Toroidal Environment
+
+The artificial world uses a two-dimensional **toroidal grid**.
+
+There are no hard borders.
+
+When an agent crosses one edge of the environment, it appears on the opposite side.
+
+Examples:
 
 ```text
 Right edge  → Left edge
@@ -82,96 +176,44 @@ Top edge    → Bottom edge
 Bottom edge → Top edge
 ```
 
-This allows the simulation world to behave as a continuous surface without hard borders.
-
----
-
-## Ecosystem Entities
-
-### Herbivore
-
-A herbivore can:
-
-- move forward
-- turn left
-- turn right
-- detect nearby objects
-- search for plants
-- eat plants
-- gain energy
-- learn from actions
-- reproduce
-- pass its neural network to offspring
-
-A herbivore receives:
+Example:
 
 ```text
-+1 energy
+(3, 11) + EAST → (3, 0)
 ```
 
-when it successfully eats a plant.
-
----
-
-### Carnivore
-
-A carnivore can:
-
-- move forward
-- turn left
-- turn right
-- detect nearby objects
-- search for herbivores
-- hunt herbivores
-- gain energy
-- learn from actions
-- reproduce
-- pass its neural network to offspring
-
-A carnivore receives:
-
-```text
-+2 energy
-```
-
-when it successfully eats a herbivore.
-
----
-
-### Plant
-
-A plant is a static environmental resource.
-
-Plants:
-
-- occupy one cell
-- do not move
-- do not have a neural network
-- do not perform actions
-- can be eaten by herbivores
+This creates a continuous artificial world without boundary walls.
 
 ---
 
 ## Sensor System
 
-Animals do not have access to the entire environment.
+Animals cannot observe the entire environment.
 
-Each animal perceives only its local surroundings.
+They only receive information from local sensor regions:
 
-The sensor system is divided into four regions:
+```text
+Front
+Left
+Right
+Nearness
+```
 
-- Front
-- Left
-- Right
-- Nearness
+Each region detects three entity types:
 
-The sensors detect three categories:
+```text
+Herbivore
+Carnivore
+Plant
+```
 
-- Herbivores
-- Carnivores
-- Plants
+Therefore:
 
-This creates a total of **12 sensor inputs**.
+```text
+4 regions × 3 entity types = 12 neural inputs
+```
+
+The input vector is:
 
 ```text
 HF CF PF
@@ -179,8 +221,6 @@ HL CL PL
 HR CR PR
 HN CN PN
 ```
-
-The abbreviations mean:
 
 | Input | Meaning                 |
 | ----- | ----------------------- |
@@ -197,39 +237,54 @@ The abbreviations mean:
 | CN    | Carnivores in Nearness  |
 | PN    | Plants in Nearness      |
 
-In this implementation, **Nearness** consists of the eight cells directly surrounding an animal.
+### Nearness
 
-The other sensor regions depend on the current direction of the animal.
+In the current implementation, Nearness consists of the eight cells directly surrounding the animal.
+
+```text
+N N N
+N A N
+N N N
+```
+
+Where:
+
+```text
+A = Animal
+N = Nearness
+```
+
+Front, Left, and Right are relative to the animal's current orientation.
 
 ---
 
 ## Neural Decision System
 
-Each animal contains its own neural decision system.
+Every animal owns its own `NeuralBrain`.
 
-The network has:
+The neural system contains:
 
 ```text
 12 inputs
 4 outputs
 ```
 
-For each output neuron, the following equation is calculated:
+Each output is calculated using:
 
 ```text
 Output(i) = Bias(i) + Σ Weight(i,j) × Input(j)
 ```
 
-The four outputs represent the available actions:
+The four outputs correspond to four actions:
 
-| Output | Action       |
-| ------ | ------------ |
-| 0      | TURN_LEFT    |
-| 1      | TURN_RIGHT   |
-| 2      | MOVE_FORWARD |
-| 3      | EAT          |
+| Neural Output | Action       |
+| ------------- | ------------ |
+| 0             | TURN_LEFT    |
+| 1             | TURN_RIGHT   |
+| 2             | MOVE_FORWARD |
+| 3             | EAT          |
 
-The action with the largest neural output is selected.
+After calculating all four outputs, the largest value is selected.
 
 This is a **winner-takes-all** decision mechanism.
 
@@ -242,19 +297,17 @@ MOVE_FORWARD = 1.50
 EAT          = 2.10
 ```
 
-The selected action is:
+Result:
 
 ```text
-EAT
+Selected Action = EAT
 ```
-
-because it has the largest output.
 
 ---
 
 ## Available Actions
 
-Each animal can select one of four actions:
+Each animal can perform one of four actions:
 
 ```text
 TURN_LEFT
@@ -279,29 +332,27 @@ Toroidal wrapping is automatically applied.
 
 ### EAT
 
-Attempts to consume an appropriate food source inside the local nearness area.
+Attempts to consume an edible entity in the local Nearness region.
 
-For herbivores:
+For Herbivores:
 
 ```text
-Plant → food
+Plant → Food
 ```
 
-For carnivores:
+For Carnivores:
 
 ```text
-Herbivore → food
+Herbivore → Food
 ```
 
 ---
 
-## Learning
+## Reinforcement-Based Learning
 
-The neural-network parameters can change during an animal's lifetime.
+Animals can modify their neural parameters during their lifetime.
 
-The project uses a simple reinforcement-style adaptation rule.
-
-The basic weight update is:
+The implemented learning rule is:
 
 ```text
 weight =
@@ -310,27 +361,33 @@ weight + learningRate × reward × input
 
 The bias of the selected action is also updated.
 
-A positive reward strengthens useful behavior.
+Current learning rate:
 
-A negative reward weakens unsuccessful behavior.
+```text
+0.05
+```
+
+Positive rewards reinforce successful behavior.
+
+Negative rewards discourage unsuccessful behavior.
 
 Examples:
 
 ```text
-Successful eating    → positive reward
-Failed eating        → negative reward
-Successful movement  → small positive reward
-Blocked movement     → negative reward
-Turning repeatedly   → small penalty
+Successful EAT       → positive reward
+Failed EAT           → negative reward
+Successful MOVE      → small positive reward
+Blocked MOVE         → negative reward
+TURN                 → small penalty
 ```
 
 ---
 
 ## Behavioral Reward Shaping
 
-Additional feedback helps agents associate sensor information with useful actions.
+Additional reward shaping helps agents associate sensor information with useful actions.
 
-### Herbivore behavior
+### Herbivore
 
 ```text
 Plant in Nearness → EAT
@@ -339,7 +396,7 @@ Plant on Left     → TURN_LEFT
 Plant on Right    → TURN_RIGHT
 ```
 
-### Carnivore behavior
+### Carnivore
 
 ```text
 Herbivore in Nearness → EAT
@@ -352,48 +409,50 @@ Herbivore on Right    → TURN_RIGHT
 
 ## Exploration
 
-During the real simulation, agents do not always select the current best neural-network action.
+Using only the current neural winner may cause an agent to repeat the same behavior indefinitely.
 
-A small exploration probability is used.
-
-Current value:
+The simulation therefore uses a small exploration probability:
 
 ```text
 10%
 ```
 
-This means that approximately 10% of decisions are random exploratory actions.
+Conceptually:
 
-Exploration allows an agent to discover new behaviors instead of remaining permanently stuck with its initial neural-network preferences.
+```text
+90% → neural decision
+10% → exploratory random action
+```
+
+Exploration is enabled during the ecosystem simulation.
+
+Deterministic tests can disable exploration.
 
 ---
 
 ## Energy System
 
-Every animal has a maximum energy level.
+Each animal has:
 
 ```text
-Maximum energy = 20.0
+Maximum Energy = 20.0
+Initial Energy = 16.0
 ```
 
-Initial energy:
+Every active iteration consumes:
 
 ```text
-Initial energy = 16.0
+0.02 energy
 ```
 
-Metabolism cost per simulation iteration:
-
-```text
-0.02
-```
-
-Food rewards:
+Food restores energy:
 
 ```text
 Herbivore eats Plant     → +1 energy
 Carnivore eats Herbivore → +2 energy
 ```
+
+Energy is limited to the maximum value.
 
 If an animal's energy reaches zero, the animal dies.
 
@@ -401,12 +460,16 @@ If an animal's energy reaches zero, the animal dies.
 
 ## Reproduction
 
-An animal becomes eligible for reproduction when its energy reaches at least 90% of its maximum energy.
+An animal becomes eligible for reproduction when its energy reaches at least:
 
 ```text
-Maximum energy = 20
+90% of maximum energy
+```
 
-90% × 20 = 18
+With maximum energy equal to 20:
+
+```text
+20 × 0.90 = 18
 ```
 
 Therefore:
@@ -417,130 +480,173 @@ Energy >= 18
 
 allows reproduction.
 
-During reproduction:
+The reproduction process is:
 
-1. The simulation searches for an empty neighboring cell.
-2. A child of the same species is created.
-3. Energy is transferred from the parent to the child.
-4. The child inherits the parent's neural network.
-5. Small mutations are applied to the inherited network.
-6. The child's generation number is increased.
+```text
+Parent reaches energy threshold
+             ↓
+Find empty neighboring cell
+             ↓
+Copy parent's neural network
+             ↓
+Apply mutation
+             ↓
+Create offspring
+             ↓
+Increase generation
+             ↓
+Transfer energy
+```
+
+The offspring receives:
+
+```text
+40% of maximum energy
+```
+
+Therefore:
+
+```text
+Child Energy = 8
+```
 
 Example:
 
 ```text
-Parent generation = 0
-Child generation  = 1
+Parent energy before = 18
+Child energy         = 8
+Parent energy after  = 10
 ```
 
 ---
 
-## Neural Inheritance and Mutation
+## Neural Inheritance
 
-The offspring receives a copy of the parent's current neural network.
+The offspring receives a copy of the parent's current neural parameters.
 
-This includes the neural-network parameters learned by the parent during its lifetime.
-
-Small random mutations are then applied to some parameters.
-
-This creates variation between parent and offspring.
-
-The mechanism allows the simulation to represent both:
+This includes:
 
 ```text
-learning during lifetime
+Weights
+Biases
 ```
 
-and:
+Because the parent can learn during its lifetime, the copied network contains the parent's current adapted values.
+
+The new child belongs to the next generation.
+
+Example:
 
 ```text
-evolution between generations
+Parent Generation = 0
+Child Generation  = 1
 ```
 
 ---
 
-## Graphical Interface
+## Mutation
 
-The application uses **Java Swing**.
+After neural inheritance, small random mutations are applied to the child's neural parameters.
 
-The main window contains:
+Current configuration:
 
-- artificial-life grid
-- iteration counter
-- herbivore population
-- carnivore population
-- plant population
+```text
+Mutation probability = 10%
+Mutation magnitude   = 0.10
+```
+
+This creates small differences between parent and offspring.
+
+The model therefore combines:
+
+```text
+Lifetime Learning
++
+Inheritance
++
+Mutation
+```
+
+---
+
+## Simulation Configuration
+
+Current default ecosystem configuration:
+
+```text
+Grid Rows          = 15
+Grid Columns       = 20
+
+Initial Herbivores = 8
+Initial Carnivores = 3
+Initial Plants     = 25
+
+Maximum Iterations = 400
+```
+
+The default GUI simulation uses:
+
+```text
+Seed = 42
+```
+
+A fixed seed makes development and testing reproducible.
+
+---
+
+## Graphical User Interface
+
+EcoAgents includes an interactive graphical interface implemented using **Java Swing**.
+
+The interface provides:
+
+- ecosystem grid
+- current iteration
+- Herbivore population
+- Carnivore population
+- Plant population
 - total births
 - maximum generation
 - simulation status
 - speed control
-- agent inspector
-- population chart
+- agent inspection
+- population history
 - event log
 
 ---
 
 ## Simulation Controls
 
-The graphical interface provides the following buttons:
-
 ### Start
 
-Starts automatic simulation.
+Starts automatic execution.
 
 ### Pause
 
-Pauses the simulation.
+Pauses execution.
 
 ### Step
 
-Executes exactly one simulation iteration.
+Executes one simulation iteration.
 
 ### Reset
 
-Creates the original ecosystem again using the configured random seed.
+Creates a fresh simulation using the default seed.
 
 ### Speed
 
-Controls the delay between simulation iterations.
-
----
-
-## Grid Visualization
-
-The grid displays the ecosystem visually.
-
-### Herbivore
-
-Displayed as a green circle:
-
-```text
-H
-```
-
-### Carnivore
-
-Displayed as a red circle:
-
-```text
-C
-```
-
-### Plant
-
-Displayed as a small green dot.
-
-Animals also contain a direction marker showing the direction in which they are currently facing.
+Changes the delay between simulation iterations.
 
 ---
 
 ## Agent Inspector
 
-A user can click a living object on the grid.
+A living entity can be selected directly from the grid.
 
-For animals, the inspector displays:
+For animals, the inspector shows:
 
-- type
+- animal type
+- alive status
 - position
 - direction
 - energy
@@ -552,29 +658,31 @@ For animals, the inspector displays:
 - 12 sensor inputs
 - 4 neural outputs
 
-This makes the internal decision-making process of the agent visible during the simulation.
+This makes the internal state of autonomous agents visible while the simulation is running.
 
 ---
 
 ## Population History
 
-The graphical interface contains a live population chart.
+The Simulation tab contains a live population chart.
 
-The chart tracks:
+It records:
 
-- Herbivore population
-- Carnivore population
-- Plant population
+```text
+Herbivore population
+Carnivore population
+Plant population
+```
 
-over time.
+over simulation time.
 
-This makes ecosystem changes easier to observe.
+The chart helps visualize ecosystem changes.
 
 ---
 
 ## Event Log
 
-Important simulation events are recorded in the event log.
+Important ecosystem events are recorded.
 
 Examples:
 
@@ -584,7 +692,28 @@ Examples:
 [121] 1 new offspring born
 ```
 
-The log helps explain how population changes occurred.
+The Event Log makes population changes easier to understand during demonstrations.
+
+---
+
+## Project Architecture
+
+The project is divided into several packages:
+
+```text
+ecoagents
+│
+├── agents
+├── brain
+├── environment
+├── model
+├── simulation
+└── ui
+```
+
+A detailed architecture description is available here:
+
+[Architecture Documentation](docs/architecture.md)
 
 ---
 
@@ -593,205 +722,94 @@ The log helps explain how population changes occurred.
 ```text
 EcoAgents/
 │
-├── src/
-│   └── ecoagents/
-│       │
-│       ├── Main.java
-│       │
-│       ├── agents/
-│       │   ├── Agent.java
-│       │   ├── Animal.java
-│       │   ├── Herbivore.java
-│       │   ├── Carnivore.java
-│       │   └── Plant.java
-│       │
-│       ├── brain/
-│       │   └── NeuralBrain.java
-│       │
-│       ├── environment/
-│       │   └── Environment.java
-│       │
-│       ├── model/
-│       │   ├── Action.java
-│       │   ├── Direction.java
-│       │   ├── Position.java
-│       │   └── SensorData.java
-│       │
-│       ├── simulation/
-│       │   ├── Simulation.java
-│       │   └── SimulationConfig.java
-│       │
-│       └── ui/
-│           ├── GameFrame.java
-│           ├── EnvironmentPanel.java
-│           ├── AgentDetailsPanel.java
-│           ├── SimulationInfoPanel.java
-│           └── PopulationChartPanel.java
-│
-├── docs/
-│
+├── .gitignore
+├── LICENSE
 ├── README.md
 │
-└── .gitignore
-```
-
-The source directory also contains development and regression-test classes.
-
----
-
-## Regression Tests
-
-The project contains several tests for important simulation components.
-
-### Toroidal World
-
-```cmd
-java -cp out ecoagents.ToroidalTest
-```
-
-Tests movement across environment boundaries.
-
----
-
-### Sensor System
-
-```cmd
-java -cp out ecoagents.SensorTest
-```
-
-Tests the 12-input local perception vector.
-
----
-
-### Neural Network
-
-```cmd
-java -cp out ecoagents.NeuralBrainTest
-```
-
-Tests neural output calculation and winner-takes-all selection.
-
----
-
-### Animal-Brain Integration
-
-```cmd
-java -cp out ecoagents.AnimalBrainTest
-```
-
-Tests the complete:
-
-```text
-Sensors → Brain → Action → Environment
-```
-
-cycle.
-
----
-
-### Learning
-
-```cmd
-java -cp out ecoagents.LearningTest
-```
-
-Tests reinforcement-based neural adaptation.
-
----
-
-### Nearness Interaction
-
-```cmd
-java -cp out ecoagents.NearnessEatTest
-```
-
-Tests eating inside the eight-cell nearness region.
-
----
-
-### Reproduction
-
-```cmd
-java -cp out ecoagents.ReproductionTest
-```
-
-Tests:
-
-- reproduction threshold
-- energy transfer
-- child generation
-- neural inheritance
-- mutation
-
----
-
-### Ecosystem Balance
-
-```cmd
-java -cp out ecoagents.EcosystemBalanceTest
-```
-
-Runs a complete multi-agent ecosystem simulation.
-
----
-
-## Validated Simulation Result
-
-Using random seed:
-
-```text
-42
-```
-
-the ecosystem successfully produced natural reproduction.
-
-Example result:
-
-```text
-Iteration 121
-Births: 1
-Maximum Generation: 1
-```
-
-The ecosystem test continued successfully until:
-
-```text
-Iteration 400
-```
-
-with no simulation crash.
-
-One example final result was:
-
-```text
-Herbivores: 4
-Carnivores: 3
-Plants: 2
-Births: 1
-Maximum Generation: 1
+├── docs/
+│   ├── architecture.md
+│   └── screenshots/
+│       ├── main-interface.png
+│       └── simulation-analysis.png
+│
+└── src/
+    └── ecoagents/
+        │
+        ├── Main.java
+        │
+        ├── ToroidalTest.java
+        ├── DirectionTest.java
+        ├── SensorTest.java
+        ├── NeuralBrainTest.java
+        ├── AnimalBrainTest.java
+        ├── LearningTest.java
+        ├── NearnessEatTest.java
+        ├── ReproductionTest.java
+        ├── SimulationTest.java
+        ├── EcosystemBalanceTest.java
+        │
+        ├── agents/
+        │   ├── Agent.java
+        │   ├── Animal.java
+        │   ├── Herbivore.java
+        │   ├── Carnivore.java
+        │   └── Plant.java
+        │
+        ├── brain/
+        │   └── NeuralBrain.java
+        │
+        ├── environment/
+        │   └── Environment.java
+        │
+        ├── model/
+        │   ├── Action.java
+        │   ├── Direction.java
+        │   ├── Position.java
+        │   └── SensorData.java
+        │
+        ├── simulation/
+        │   ├── Simulation.java
+        │   └── SimulationConfig.java
+        │
+        └── ui/
+            ├── GameFrame.java
+            ├── EnvironmentPanel.java
+            ├── AgentDetailsPanel.java
+            ├── SimulationInfoPanel.java
+            └── PopulationChartPanel.java
 ```
 
 ---
 
 ## Requirements
 
-- Java Development Kit 21 or newer
-- Windows, Linux, or macOS
-- No external Java libraries are required
+The project requires:
 
-The graphical interface is implemented using the standard Java Swing library.
+```text
+Java Development Kit 21+
+```
+
+The project has been developed and tested using:
+
+```text
+Temurin JDK 21
+```
+
+No external Java libraries are required.
+
+The graphical interface uses the standard Java Swing library.
 
 ---
 
-## Compile the Project
+## Compile
 
-Open CMD and move to the project directory:
+Open CMD and navigate to the project directory:
 
 ```cmd
 cd /d G:\Projects\Uni-Projects\EcoAgents
 ```
 
-Remove the previous compilation output:
+Remove the previous compilation directory:
 
 ```cmd
 rmdir /s /q out
@@ -803,73 +821,271 @@ Create a clean output directory:
 mkdir out
 ```
 
-Compile the project:
+Compile:
 
 ```cmd
-javac -d out src\ecoagents\model\*.java src\ecoagents\brain\*.java src\ecoagents\environment\*.java src\ecoagents\agents\*.java src\ecoagents\game\*.java src\ecoagents\simulation\*.java src\ecoagents\ui\*.java src\ecoagents\*.java
+javac -d out src\ecoagents\model\*.java src\ecoagents\brain\*.java src\ecoagents\environment\*.java src\ecoagents\agents\*.java src\ecoagents\simulation\*.java src\ecoagents\ui\*.java src\ecoagents\*.java
 ```
 
 ---
 
-## Run the Application
+## Run
 
-After compilation:
+Start the graphical application:
 
 ```cmd
 java -cp out ecoagents.Main
 ```
 
-The EcoAgents graphical application will open.
-
 ---
 
-## Run All Main Tests
+## Tests
+
+The project contains regression and subsystem tests.
+
+### Toroidal Environment
 
 ```cmd
 java -cp out ecoagents.ToroidalTest
+```
+
+### Direction System
+
+```cmd
+java -cp out ecoagents.DirectionTest
+```
+
+### Sensor System
+
+```cmd
 java -cp out ecoagents.SensorTest
+```
+
+### Neural Brain
+
+```cmd
 java -cp out ecoagents.NeuralBrainTest
+```
+
+### Animal-Brain Integration
+
+```cmd
 java -cp out ecoagents.AnimalBrainTest
+```
+
+### Learning
+
+```cmd
 java -cp out ecoagents.LearningTest
+```
+
+### Nearness Interaction
+
+```cmd
 java -cp out ecoagents.NearnessEatTest
+```
+
+### Reproduction
+
+```cmd
 java -cp out ecoagents.ReproductionTest
+```
+
+### Simulation
+
+```cmd
+java -cp out ecoagents.SimulationTest
+```
+
+### Complete Ecosystem
+
+```cmd
 java -cp out ecoagents.EcosystemBalanceTest
+```
+
+---
+
+## Validated Results
+
+All major project subsystems have been tested successfully.
+
+Validated functionality includes:
+
+```text
+Toroidal movement             PASS
+Direction handling            PASS
+Local sensor system           PASS
+12-input perception           PASS
+Neural calculation            PASS
+Winner-takes-all selection    PASS
+Herbivore feeding             PASS
+Carnivore hunting             PASS
+Energy metabolism             PASS
+Reinforcement learning        PASS
+Nearness interaction          PASS
+Reproduction                  PASS
+Neural inheritance            PASS
+Mutation                      PASS
+Full ecosystem simulation     PASS
+Graphical interface           PASS
+```
+
+---
+
+## Example Learning Result
+
+A controlled learning test produced:
+
+```text
+EAT output before = 1.0000
+Learning reward   = 1.50
+EAT output after  = 1.1500
+```
+
+Result:
+
+```text
+PASS: successful EAT was reinforced.
+```
+
+---
+
+## Example Reproduction Result
+
+A controlled reproduction test produced:
+
+```text
+Parent energy before = 18.00 / 20.00
+Parent generation    = 0
+
+Child generation     = 1
+Child energy         = 8.00 / 20.00
+Parent energy after  = 10.00 / 20.00
+
+Changed neural parameters = 7
+Maximum mutation          = 0.0931
+```
+
+Result:
+
+```text
+PASS: reproduction, inheritance and mutation work.
+```
+
+---
+
+## Full Ecosystem Result
+
+Using:
+
+```text
+Seed = 42
+```
+
+natural reproduction occurred during the complete simulation.
+
+At iteration:
+
+```text
+121
+```
+
+the ecosystem reached:
+
+```text
+Births         = 1
+Max Generation = 1
+```
+
+The complete simulation continued successfully to:
+
+```text
+Iteration 400
+```
+
+Example final state:
+
+```text
+Herbivores     = 4
+Carnivores     = 3
+Plants         = 2
+Births         = 1
+Max Generation = 1
+```
+
+Result:
+
+```text
+PASS: reproduction occurred in the ecosystem.
 ```
 
 ---
 
 ## Technologies and Concepts
 
-The project demonstrates concepts from:
+EcoAgents demonstrates concepts from:
 
 - Java 21
 - Java Swing
 - Object-Oriented Programming
-- Multi-Agent Systems
 - Artificial Life
+- Multi-Agent Systems
+- Agent-Based Modeling
 - Neural Networks
 - Reinforcement-Based Learning
 - Evolutionary Adaptation
 - Simulation Modeling
-- Agent-Based Modeling
+
+---
+
+## Design Decisions
+
+Several values in EcoAgents are implementation choices used to create a demonstrable artificial-life simulation.
+
+Examples include:
+
+```text
+Nearness = 8 neighboring cells
+
+Learning rate = 0.05
+
+Exploration probability = 10%
+
+Initial energy = 16
+
+Maximum energy = 20
+
+Metabolism cost = 0.02
+
+Reproduction threshold = 90%
+
+Offspring energy = 8
+
+Mutation probability = 10%
+
+Mutation magnitude = 0.10
+```
+
+These parameters can be modified in future experiments.
 
 ---
 
 ## Future Improvements
 
-Possible future extensions include:
+Possible extensions include:
 
 - plant regeneration
-- larger ecosystems
-- configurable simulation parameters
-- multiple generations
-- improved neural-network learning
-- saving simulation statistics
-- exporting population data
+- longer evolutionary experiments
 - additional animal species
-- more advanced mutation strategies
-- improved sensor geometry
-- visualization of neural-network weights
+- configurable simulation parameters
+- CSV statistics export
+- experiment comparison across multiple random seeds
+- neural-weight visualization
+- more advanced reinforcement-learning methods
+- hidden neural layers
+- genetic crossover
+- adaptive mutation
+- persistent simulation history
 
 ---
 
